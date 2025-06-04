@@ -22,6 +22,7 @@ This repository simulates the flight dynamics of a rigid-body rocket in six degr
 
 ## Repository Structure
 
+ ```plaintext
 main.py                    # Entry point for running simulations
 config.py                  # Simulation constants and configuration
 
@@ -46,7 +47,7 @@ tests/                     # Unit tests
 requirements.txt           # Python dependencies
 README.md                  # Project documentation
 .gitignore                 # Standard Python ignores
-
+```
 ---
 
 ## Quick Start
