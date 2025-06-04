@@ -1,6 +1,6 @@
 # Rocket6DOF-Sim
 
-A modular Python simulation framework for modeling, control, and analysis of a 6-degree-of-freedom (6DOF) rocket. The project is structured for extensibility, clarity, and rigorous testing, supporting advanced features such as Monte Carlo analysis and 3D visualization.
+A modular Python simulation framework for modeling, control, and analysis of a 6-degree-of-freedom (6DOF) rocket. The project is structured for extensibility, clarity, and rigorous testing, supporting features such as Monte Carlo analysis and 3D visualization.
 
 ---
 
