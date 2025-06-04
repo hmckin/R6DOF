@@ -22,30 +22,30 @@ This repository simulates the flight dynamics of a rigid-body rocket in six degr
 
 ## Repository Structure
 
-R6DDOF/
-├── main.py                    # Entry point for running simulations
-├── config.py                  # Simulation constants and configuration
-├── requirements.txt           # Python dependencies
-├── README.md                  # Project documentation
-├── .gitignore                # Standard Python ignores
-│
-├── models/
-│   ├── dynamics.py           # 6DOF equations of motion
-│   └── vehicle.py            # Rocket physical properties and state
-│
-├── control/
-│   └── pid.py                # PID controller implementation
-│
-├── simulation/
-│   ├── simulator.py          # Integrates dynamics and control
-│   └── montecarlo.py         # Monte Carlo test runner
-│
-├── visualization/
-│   ├── plots.py              # 2D plotting utilities
-│   └── animation.py          # 3D animation (optional)
-│
-├── results/                  # Output plots and data
-└── tests/                    # Unit tests
+main.py                    # Entry point for running simulations
+config.py                  # Simulation constants and configuration
+
+models/
+  dynamics.py              # 6DOF equations of motion
+  vehicle.py               # Rocket physical properties and state
+
+control/
+  pid.py                   # PID controller implementation
+
+simulation/
+  simulator.py             # Integrates dynamics and control
+  montecarlo.py            # Monte Carlo test runner
+
+visualization/
+  plots.py                 # 2D plotting utilities
+  animation.py             # 3D animation (optional)
+
+results/                   # Output plots and data
+tests/                     # Unit tests
+
+requirements.txt           # Python dependencies
+README.md                  # Project documentation
+.gitignore                 # Standard Python ignores
 
 ---
 
