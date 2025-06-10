@@ -35,10 +35,11 @@ def euler_angle_rates(angles, omega):
     ])
     return t1 @ omega
 
-def rocket_ode(t, state):
+def rocket_ode(t, state, torque=None):
     """
     ODE function for 6DOF rocket dynamics.
     state: [x, y, z, vx, vy, vz, phi, theta, psi, wx, wy, wz]
+    torque: np.ndarray, shape (3,), control torque in body frame (e.g., from PID controller)
     Returns dstate/dt
     """
     # Unpack state
@@ -65,8 +66,9 @@ def rocket_ode(t, state):
     # Rotational dynamics (Euler's equations)
     I = np.array(ROCKET.moment_of_inertia)
     omega = np.array([wx, wy, wz])
-    # Assume thrust vector passes through CM, so no torque from thrust
-    torque = np.zeros(3)  # Placeholder, add aerodynamic or control torques as needed
+    # Use provided torque or default to zero
+    if torque is None:
+        torque = np.zeros(3)
     domega = np.zeros(3)
     domega[0] = (torque[0] - (I[2] - I[1]) * wy * wz) / I[0]
     domega[1] = (torque[1] - (I[0] - I[2]) * wx * wz) / I[1]

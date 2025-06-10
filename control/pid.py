@@ -1,11 +1,11 @@
 class PID:
     def __init__(self, kp, ki, kd, setpoint=0.0, output_limits=(None, None)):
-        self.kp = kp
-        self.ki = ki
-        self.kd = kd
-        self.setpoint = setpoint
-        self.output_limits = output_limits
-        self.clear()
+        self.kp = kp # Proportional gain, responds to the current error with a magnitude proportional to the error
+        self.ki = ki # Integral gain, cumulative error over time to address residual steady-state error
+        self.kd = kd # Derivative gain, anticipates future error by considering the rate of change of the error
+        self.setpoint = setpoint # Desired value
+        self.output_limits = output_limits # Output limits
+        self.clear() 
 
     def clear(self):
         self.integral = 0.0
@@ -23,11 +23,11 @@ class PID:
             self.ki * self.integral +
             self.kd * derivative
         )
-        # Clamp output
+        # Clamp output if beyond physical limits
         min_out, max_out = self.output_limits
         if min_out is not None:
             output = max(min_out, output)
         if max_out is not None:
             output = min(max_out, output)
         self.prev_error = error
-        return output
+        return output # computed control signal to adjust the system
