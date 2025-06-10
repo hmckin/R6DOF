@@ -1,6 +1,7 @@
 import numpy as np
+from scipy.integrate import solve_ivp
 from models.dynamics import rocket_ode
-from config import INITIAL_CONDITIONS, TIME_STEP, TOTAL_TIME
+from config import INITIAL_CONDITIONS, TOTAL_TIME
 from control.pid import PID
 
 def guidance_law(t):
@@ -12,45 +13,52 @@ def guidance_law(t):
     return np.array([0.0, pitch_target, 0.0])  # [roll, pitch, yaw]
 
 def simulate_closed_loop():
-    # Initial state: [x, y, z, vx, vy, vz, phi, theta, psi, wx, wy, wz]
-    state = np.array(
+    # Initial state vector: [x, y, z, vx, vy, vz, phi, theta, psi, wx, wy, wz]
+    state0 = np.array(
         INITIAL_CONDITIONS.position +
         INITIAL_CONDITIONS.velocity +
         INITIAL_CONDITIONS.orientation +
         INITIAL_CONDITIONS.angular_velocity,
         dtype=float
     )
-    t = 0.0
-    history = []
-    N = int(TOTAL_TIME / TIME_STEP)
 
-    # PID controllers for roll, pitch, yaw
+    # PID controllers
     pid_roll = PID(kp=10, ki=0.1, kd=2)
     pid_pitch = PID(kp=10, ki=0.1, kd=2)
     pid_yaw = PID(kp=10, ki=0.1, kd=2)
 
-    for i in range(N):
-        # --- Guidance law: get target attitude ---
-        target_angles = guidance_law(t)
+    # To track previous errors for derivative control
+    prev_error = np.zeros(3)
+    integral_error = np.zeros(3)
 
-        # --- Control: compute attitude error and PID output ---
-        current_angles = state[6:9]  # [phi, theta, psi]
+    def closed_loop_dynamics(t, state):
+        nonlocal prev_error, integral_error
+
+        # --- Guidance target ---
+        target_angles = guidance_law(t)
+        current_angles = state[6:9]  # phi, theta, psi
         error = target_angles - current_angles
-        # Wrap error to [-pi, pi] for each angle
         error = (error + np.pi) % (2 * np.pi) - np.pi
-        # PID outputs (torques)
+
+        # --- PID control ---
         torque = np.array([
-            pid_roll.update(error[0], TIME_STEP),
-            pid_pitch.update(error[1], TIME_STEP),
-            pid_yaw.update(error[2], TIME_STEP)
+            pid_roll.update(error[0], t),
+            pid_pitch.update(error[1], t),
+            pid_yaw.update(error[2], t)
         ])
 
-        # --- Dynamics: propagate state with control torque ---
-        dstate = rocket_ode(t, state, torque)
-        # Euler integration, would use Runge-Kutta for better accuracy
-        state = state + dstate * TIME_STEP
-        t += TIME_STEP
-        history.append(np.concatenate(([t], state, target_angles, torque)))
+        # --- Rocket dynamics ---
+        return rocket_ode(t, state, torque)
 
-    history = np.array(history)
-    return history
+    # Solve using solve_ivp
+    sol = solve_ivp(
+        fun=closed_loop_dynamics,
+        t_span=(0, TOTAL_TIME),
+        y0=state0,
+        method='RK45',
+        dense_output=True,
+        max_step=0.05  # Optional: controls resolution
+    )
+
+    return sol
+
