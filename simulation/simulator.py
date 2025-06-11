@@ -3,6 +3,8 @@ from scipy.integrate import solve_ivp
 from models.dynamics import rocket_ode
 from config import INITIAL_CONDITIONS, TOTAL_TIME, TIME_STEP
 from control.pid import PID
+import matplotlib.pyplot as plt
+import os
 
 def guidance_law(t):
     """
@@ -27,13 +29,9 @@ def simulate_closed_loop():
     pid_pitch = PID(kp=10, ki=0.1, kd=2)
     pid_yaw = PID(kp=10, ki=0.1, kd=2)
 
-    # To track previous errors for derivative control
-    prev_error = np.zeros(3)
-    integral_error = np.zeros(3)
+    torques_history = []
 
     def closed_loop_dynamics(t, state):
-        nonlocal prev_error, integral_error
-
         # --- Guidance target ---
         target_angles = guidance_law(t)
         current_angles = state[6:9]  # phi, theta, psi
@@ -48,6 +46,9 @@ def simulate_closed_loop():
             pid_yaw.update(current_angles[2], TIME_STEP)
         ])
 
+        # --- Record torque for plotting ---
+        torques_history.append((t, *torque))
+
         # --- Rocket dynamics ---
         return rocket_ode(t, state, torque)
 
@@ -61,5 +62,20 @@ def simulate_closed_loop():
         max_step=0.05  # Optional: controls resolution
     )
 
-    return sol
+    # Convert torques_history to array for easy plotting
+    torques_history = np.array(torques_history)
+    return sol, torques_history
+
+def plot_torques(t, torques):
+    plt.figure()
+    plt.plot(t, torques[0], label='Torque Roll')
+    plt.plot(t, torques[1], label='Torque Pitch')
+    plt.plot(t, torques[2], label='Torque Yaw')
+    plt.xlabel('Time [s]')
+    plt.ylabel('Torque [Nm]')
+    plt.title('Control Torques vs Time')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(os.path.join('results', 'torques_vs_time.png'))
+    plt.close()
 

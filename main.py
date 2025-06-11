@@ -7,7 +7,8 @@ print("Starting closed-loop 6DOF rocket simulation...")
 
 # Run closed-loop simulation
 total_result = simulate_closed_loop()
-sol = total_result  # For clarity
+sol = total_result[0]
+torques_history = total_result[1]
 
 # Extract time and state
 if hasattr(sol, 't') and hasattr(sol, 'y'):
@@ -25,7 +26,7 @@ plot_attitude(t, y)
 # Plot and save altitude
 plot_altitude(t, y)
 # Plot and save control torques
-plot_torques(t, y)
+plot_torques(t, torques_history)
 
-print("Plots saved to results/.")
+print("Plots saved to results directory.")
 print("Simulation complete.")
