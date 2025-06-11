@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.integrate import solve_ivp
 from models.dynamics import rocket_ode
-from config import INITIAL_CONDITIONS, TOTAL_TIME
+from config import INITIAL_CONDITIONS, TOTAL_TIME, TIME_STEP
 from control.pid import PID
 
 def guidance_law(t):
@@ -37,14 +37,15 @@ def simulate_closed_loop():
         # --- Guidance target ---
         target_angles = guidance_law(t)
         current_angles = state[6:9]  # phi, theta, psi
-        error = target_angles - current_angles
-        error = (error + np.pi) % (2 * np.pi) - np.pi
 
         # --- PID control ---
+        pid_roll.setpoint = target_angles[0]
+        pid_pitch.setpoint = target_angles[1]
+        pid_yaw.setpoint = target_angles[2]
         torque = np.array([
-            pid_roll.update(error[0], t),
-            pid_pitch.update(error[1], t),
-            pid_yaw.update(error[2], t)
+            pid_roll.update(current_angles[0], TIME_STEP),
+            pid_pitch.update(current_angles[1], TIME_STEP),
+            pid_yaw.update(current_angles[2], TIME_STEP)
         ])
 
         # --- Rocket dynamics ---
