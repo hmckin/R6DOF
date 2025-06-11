@@ -52,3 +52,10 @@ INITIAL_CONDITIONS = InitialConditions(
     orientation=[0.0, 0.0, 0.0],  # rad
     angular_velocity=[0.0, 0.0, 0.0],  # rad/s
 )
+
+# PID gains for roll, pitch, yaw
+PID_GAINS = {
+    'roll':  {'kp': 10.0, 'ki': 0.1, 'kd': 2.0},
+    'pitch': {'kp': 10.0, 'ki': 0.1, 'kd': 2.0},
+    'yaw':   {'kp': 10.0, 'ki': 0.1, 'kd': 2.0},
+}

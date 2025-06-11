@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.integrate import solve_ivp
 from models.dynamics import rocket_ode
-from config import INITIAL_CONDITIONS, TOTAL_TIME, TIME_STEP
+from config import INITIAL_CONDITIONS, TOTAL_TIME, TIME_STEP, PID_GAINS
 from control.pid import PID
 import matplotlib.pyplot as plt
 import os
@@ -25,9 +25,9 @@ def simulate_closed_loop():
     )
 
     # PID controllers
-    pid_roll = PID(kp=10, ki=0.1, kd=2)
-    pid_pitch = PID(kp=10, ki=0.1, kd=2)
-    pid_yaw = PID(kp=10, ki=0.1, kd=2)
+    pid_roll = PID(**PID_GAINS['roll'])
+    pid_pitch = PID(**PID_GAINS['pitch'])
+    pid_yaw = PID(**PID_GAINS['yaw'])
 
     torques_history = []
 
