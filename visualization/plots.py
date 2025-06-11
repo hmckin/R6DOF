@@ -36,10 +36,9 @@ def plot_altitude(t, y):
     plt.savefig(os.path.join('results', 'altitude_vs_time.png'))
     plt.close()
 
-def plot_torques(t, y):
-    # If torques are not in y, skip. Otherwise, plot dummy zeros.
-    # For now, plot zeros as placeholder.
-    torques = np.zeros((3, len(t)))
+def plot_torques(torques_history):
+    t = torques_history[:, 0]
+    torques = torques_history[:, 1:].T  # shape (3, N)
     plt.figure()
     plt.plot(t, torques[0], label='Torque Roll')
     plt.plot(t, torques[1], label='Torque Pitch')

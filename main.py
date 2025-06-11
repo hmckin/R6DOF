@@ -26,7 +26,7 @@ plot_attitude(t, y)
 # Plot and save altitude
 plot_altitude(t, y)
 # Plot and save control torques
-plot_torques(t, torques_history)
+plot_torques(torques_history)
 
 print("Plots saved to results directory.")
 print("Simulation complete.")
