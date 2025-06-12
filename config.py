@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import List
+from models.vehicle import Rocket
 
 # Physical constants
 GRAVITY = 9.80665  # m/s^2, standard gravity
@@ -8,16 +9,6 @@ AIR_DENSITY = 1.225  # kg/m^3, sea level standard
 # Simulation parameters
 TIME_STEP = 0.01  # s
 TOTAL_TIME = 60.0  # s
-
-@dataclass
-class RocketProperties:
-    mass: float  # kg
-    moment_of_inertia: List[float]  # kg*m^2, [Ixx, Iyy, Izz]
-    center_of_mass: List[float]  # m, [x, y, z] from nose tip
-    center_of_pressure: List[float]  # m, [x, y, z] from nose tip
-    drag_coefficient: float  # dimensionless
-    lift_coefficient: float  # dimensionless
-    reference_area: float  # m^2, cross-sectional area
 
 @dataclass
 class ThrustProfile:
@@ -32,7 +23,7 @@ class InitialConditions:
     angular_velocity: List[float]  # rad/s, [wx, wy, wz]
 
 # Example rocket configuration
-ROCKET = RocketProperties(
+ROCKET = Rocket(
     mass=50.0,  # kg
     moment_of_inertia=[10.0, 10.0, 1.0],  # kg*m^2
     center_of_mass=[0.0, 0.0, 2.0],  # m
