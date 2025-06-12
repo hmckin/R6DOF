@@ -52,9 +52,6 @@ def simulate_closed_loop(initial_state=None):
         # --- Record torque for plotting ---
         torques_history.append((t, *torque))
 
-        # --- Rocket dynamics ---    
-        if 4.0 <= t <= 6.0:
-            print(f"t={t:.2f}, torque={torque}\n")
         return rocket_ode(t, state, torque)
 
     # Solve using solve_ivp
