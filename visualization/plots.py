@@ -98,3 +98,13 @@ def plot_montecarlo_attitude(all_t, all_pitch):
     plt.grid(True)
     plt.savefig(os.path.join('results', 'pitch_montecarlo.png'))
     plt.close()
+
+def plot_metric_hist(data, xlabel, title, filename):
+    plt.figure()
+    plt.hist(data, bins=20, color='green', alpha=0.7)
+    plt.xlabel(xlabel)
+    plt.ylabel('Count')
+    plt.title(title)
+    plt.grid(True)
+    plt.savefig(os.path.join('results', filename))
+    plt.close()

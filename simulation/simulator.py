@@ -14,7 +14,11 @@ def guidance_law(t):
     pitch_target = np.deg2rad(10) if t > 5 else np.deg2rad(0)
     return np.array([0.0, pitch_target, 0.0])  # [roll, pitch, yaw]
 
-def simulate_closed_loop(initial_state=None):
+# gains: dict with keys 'roll','pitch','yaw' mapping to dicts of kp,ki,kd overrides
+# thrust: float to override THRUST_PROFILE.thrust
+# drag: float to override ROCKET.drag_coefficient
+
+def simulate_closed_loop(initial_state=None, gains=None, thrust=None, drag=None):
     # Initial state vector: [x, y, z, vx, vy, vz, phi, theta, psi, wx, wy, wz]
     if initial_state is not None:
         state0 = np.array(initial_state, dtype=float)
@@ -28,9 +32,10 @@ def simulate_closed_loop(initial_state=None):
         )
 
     # PID controllers
-    pid_roll = PID(**PID_GAINS['roll'])
-    pid_pitch = PID(**PID_GAINS['pitch'])
-    pid_yaw = PID(**PID_GAINS['yaw'])
+    gains = gains or PID_GAINS
+    pid_roll = PID(**gains['roll'])
+    pid_pitch = PID(**gains['pitch'])
+    pid_yaw = PID(**gains['yaw'])
 
     torques_history = []
 
@@ -54,6 +59,15 @@ def simulate_closed_loop(initial_state=None):
 
         return rocket_ode(t, state, torque)
 
+    # Apply thrust and drag overrides if provided (restore after simulation)
+    from config import THRUST_PROFILE, ROCKET
+    original_thrust = THRUST_PROFILE.thrust
+    original_drag = ROCKET.drag_coefficient
+    if thrust is not None:
+        THRUST_PROFILE.thrust = thrust
+    if drag is not None:
+        ROCKET.drag_coefficient = drag
+
     # Solve using solve_ivp
     sol = solve_ivp(
         fun=closed_loop_dynamics,
@@ -63,6 +77,10 @@ def simulate_closed_loop(initial_state=None):
         dense_output=True,
         max_step=0.05  # Optional: controls resolution
     )
+
+    # Restore original config values
+    THRUST_PROFILE.thrust = original_thrust
+    ROCKET.drag_coefficient = original_drag
 
     # Convert torques_history to array for easy plotting
     torques_history = np.array(torques_history)
