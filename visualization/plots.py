@@ -72,7 +72,7 @@ def plot_montecarlo_altitude(all_t, all_z):
     plt.title('Monte Carlo Altitude vs Time')
     plt.legend()
     plt.grid(True)
-    plt.savefig(os.path.join('results', 'altitude_montecarlo.png'))
+    plt.savefig(os.path.join('results', 'montecarlo_altitude.png'))
     plt.close()
 
 def plot_montecarlo_attitude(all_t, all_pitch):
@@ -96,7 +96,7 @@ def plot_montecarlo_attitude(all_t, all_pitch):
     plt.title('Monte Carlo Pitch vs Time')
     plt.legend()
     plt.grid(True)
-    plt.savefig(os.path.join('results', 'pitch_montecarlo.png'))
+    plt.savefig(os.path.join('results', 'montecarlo_pitch.png'))
     plt.close()
 
 def plot_metric_hist(data, xlabel, title, filename):

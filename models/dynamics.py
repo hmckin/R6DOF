@@ -1,5 +1,5 @@
 import numpy as np
-from config import ROCKET, THRUST_PROFILE, GRAVITY
+from config import ROCKET, THRUST_PROFILE, GRAVITY, AIR_DENSITY
 
 def rotation_matrix_euler(angles):
     """

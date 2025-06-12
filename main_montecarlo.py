@@ -33,9 +33,9 @@ for res in results:
 os.makedirs('results', exist_ok=True)
 plot_montecarlo_altitude(all_t, all_z)
 plot_montecarlo_attitude(all_t, all_pitch)
-plot_metric_hist(errors, 'Final Pitch Error [deg]', 'Monte Carlo Final Pitch Error', 'pitch_error_hist.png')
-plot_metric_hist(overshoots, 'Pitch Overshoot [deg]', 'Monte Carlo Pitch Overshoot', 'pitch_overshoot_hist.png')
-plot_metric_hist(control_efforts, 'Control Effort [Nm·s]', 'Monte Carlo Control Effort', 'control_effort_hist.png')
+plot_metric_hist(errors, 'Final Pitch Error [deg]', 'Monte Carlo Final Pitch Error', 'montecarlo_pitch_error_hist.png')
+plot_metric_hist(overshoots, 'Pitch Overshoot [deg]', 'Monte Carlo Pitch Overshoot', 'montecarlo_pitch_overshoot_hist.png')
+plot_metric_hist(control_efforts, 'Control Effort [Nm·s]', 'Monte Carlo Control Effort', 'montecarlo_control_effort_hist.png')
 
 print("Monte Carlo plots saved to results directory.")
 print("Simulation complete.") 
