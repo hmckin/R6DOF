@@ -14,15 +14,18 @@ def guidance_law(t):
     pitch_target = np.deg2rad(10) if t > 5 else np.deg2rad(0)
     return np.array([0.0, pitch_target, 0.0])  # [roll, pitch, yaw]
 
-def simulate_closed_loop():
+def simulate_closed_loop(initial_state=None):
     # Initial state vector: [x, y, z, vx, vy, vz, phi, theta, psi, wx, wy, wz]
-    state0 = np.array(
-        INITIAL_CONDITIONS.position +
-        INITIAL_CONDITIONS.velocity +
-        INITIAL_CONDITIONS.orientation +
-        INITIAL_CONDITIONS.angular_velocity,
-        dtype=float
-    )
+    if initial_state is not None:
+        state0 = np.array(initial_state, dtype=float)
+    else:
+        state0 = np.array(
+            INITIAL_CONDITIONS.position +
+            INITIAL_CONDITIONS.velocity +
+            INITIAL_CONDITIONS.orientation +
+            INITIAL_CONDITIONS.angular_velocity,
+            dtype=float
+        )
 
     # PID controllers
     pid_roll = PID(**PID_GAINS['roll'])
