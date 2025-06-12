@@ -35,11 +35,13 @@ def euler_angle_rates(angles, omega):
     ])
     return t1 @ omega
 
-def rocket_ode(t, state, torque=None):
+def rocket_ode(t, state, torque=None, thrust=None, drag_coeff=None):
     """
     ODE function for 6DOF rocket dynamics.
     state: [x, y, z, vx, vy, vz, phi, theta, psi, wx, wy, wz]
     torque: np.ndarray, shape (3,), control torque in body frame (e.g., from PID controller)
+    thrust: float, thrust in N
+    drag_coeff: float, drag coefficient
     Returns dstate/dt
     """
     # Unpack state
@@ -50,7 +52,13 @@ def rocket_ode(t, state, torque=None):
     
     # Translational dynamics
     mass = ROCKET.mass
-    thrust = THRUST_PROFILE.thrust  # N
+    # Use provided overrides or fall back to global config values
+    if thrust is None:
+        thrust = THRUST_PROFILE.thrust  # N
+
+    if drag_coeff is None:
+        drag_coeff = ROCKET.drag_coefficient  # dimensionless
+
     # Thrust in body frame (assume along +z)
     thrust_body = np.array([0, 0, thrust])
     # Convert thrust to inertial frame
@@ -58,8 +66,19 @@ def rocket_ode(t, state, torque=None):
     thrust_inertial = R @ thrust_body
     # Gravity in inertial frame
     gravity = np.array([0, 0, -mass * GRAVITY])
+
+    # Simple quadratic drag opposite to velocity (in inertial frame)
+    vel_vec = np.array([vx, vy, vz])
+    speed = np.linalg.norm(vel_vec)
+    if speed > 0:
+        drag_dir = -vel_vec / speed
+    else:
+        drag_dir = np.zeros(3)
+    drag_mag = 0.5 * AIR_DENSITY * speed**2 * drag_coeff * ROCKET.reference_area
+    drag_force = drag_mag * drag_dir
+
     # Net force
-    force = thrust_inertial + gravity
+    force = thrust_inertial + gravity + drag_force
     # Acceleration
     accel = force / mass
     

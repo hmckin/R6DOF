@@ -57,16 +57,7 @@ def simulate_closed_loop(initial_state=None, gains=None, thrust=None, drag=None)
         # --- Record torque for plotting ---
         torques_history.append((t, *torque))
 
-        return rocket_ode(t, state, torque)
-
-    # Apply thrust and drag overrides if provided (restore after simulation)
-    from config import THRUST_PROFILE, ROCKET
-    original_thrust = THRUST_PROFILE.thrust
-    original_drag = ROCKET.drag_coefficient
-    if thrust is not None:
-        THRUST_PROFILE.thrust = thrust
-    if drag is not None:
-        ROCKET.drag_coefficient = drag
+        return rocket_ode(t, state, torque, thrust=thrust, drag_coeff=drag)
 
     # Solve using solve_ivp
     sol = solve_ivp(
@@ -78,24 +69,8 @@ def simulate_closed_loop(initial_state=None, gains=None, thrust=None, drag=None)
         max_step=0.05  # Optional: controls resolution
     )
 
-    # Restore original config values
-    THRUST_PROFILE.thrust = original_thrust
-    ROCKET.drag_coefficient = original_drag
-
     # Convert torques_history to array for easy plotting
     torques_history = np.array(torques_history)
     return sol, torques_history
 
-def plot_torques(t, torques):
-    plt.figure()
-    plt.plot(t, torques[0], label='Torque Roll')
-    plt.plot(t, torques[1], label='Torque Pitch')
-    plt.plot(t, torques[2], label='Torque Yaw')
-    plt.xlabel('Time [s]')
-    plt.ylabel('Torque [Nm]')
-    plt.title('Control Torques vs Time')
-    plt.legend()
-    plt.grid(True)
-    plt.savefig(os.path.join('results', 'torques_vs_time.png'))
-    plt.close()
 
